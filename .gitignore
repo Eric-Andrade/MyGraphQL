@@ -1,0 +1,11 @@
+Javascript/yarn.lock
+Javascript/node_modules/
+/bower_components/
+/typings/
+/report/
+.DS_Store
+
+Python/Include/
+Python/Lib/
+Python/Scripts/
+Python/tcl/

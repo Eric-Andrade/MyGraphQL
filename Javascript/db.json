@@ -1,0 +1,60 @@
+{
+  "users": [
+    {
+      "id": 23,
+      "firstName": "Eric Torres",
+      "age": 25,
+      "companyId": 1,
+      "projectId": 1
+    },
+    {
+      "id": 35,
+      "firstName": "Paul Vega",
+      "age": 32,
+      "companyId": 2,
+      "projectId": 2
+    },
+    {
+      "id": 58,
+      "firstName": "Martin Retana",
+      "age": 23,
+      "companyId": 3,
+      "projectId": 2
+    },
+    {
+      "id": 83,
+      "firstName": "Bernardo Andrade",
+      "age": 23,
+      "companyId": 2,
+      "projectId": 1
+    },
+    {
+      "firstName": "Freddy",
+      "age": 23,
+      "id": 84,
+      "projectId": 3
+    }
+  ],
+  "companies": [
+    {
+      "id": 1,
+      "name": "Apple",
+      "description": "iPhone"
+    },
+    {
+      "id": 2,
+      "name": "Google",
+      "description": "Android"
+    },
+    {
+      "id": 3,
+      "name": "Itecor",
+      "description": "Software"
+    }
+  ],
+  "projects":[
+    {"id": 1, "nameProject": "KityPlacho", "description": "Desarollo web y móvil de KityPlancho"},
+    {"id": 2, "nameProject": "Residencial", "description": "Sistema de vigilancia para la residencial"},
+    {"id": 3, "nameProject": "Itecor App", "description": "Diary de Itecor"}
+  ]
+}
