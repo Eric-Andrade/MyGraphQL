@@ -1,7 +1,6 @@
 
 import axios from 'axios'
-import mongoose from 'mongoose'
-import {sequelize, employees} from './models.connection'
+import {sequelize, employees, ProjectsModel} from './models.connection'
 
 const graphql = require('graphql'), 
       _ = require('lodash');
@@ -11,12 +10,13 @@ const {
         GraphQLInt,
         GraphQLSchema,
         GraphQLList,
-        GraphQLNonNull
+        GraphQLNonNull,
+        GraphQLID
     } = graphql;
   
 
 const ProjectType = new GraphQLObjectType({
-    name: 'Project',
+    name: 'project',
     fields: () => ({
         id: {type: GraphQLInt },
         nameProject: {type: GraphQLString },
@@ -60,26 +60,30 @@ const EmployeeType = new GraphQLObjectType({
         dateregistered: { type: GraphQLString },
         itecorposition: { type: GraphQLString },
         status: { type: GraphQLString },
+        idproject: { type: GraphQLInt },
         // company:{ type: CompanyType,
-        //     resolve(parentValue, args){
-        //         return axios.get(`http://localhost:3000/companies/${parentValue.companyId}`)
-        //             .then(response => response.data);
-        //     } },
+            //     resolve(parentValue, args){
+            //         return axios.get(`http://localhost:3000/companies/${parentValue.companyId}`)
+            //             .then(response => response.data);
+            //     } },
         project:{ type: ProjectType,
             resolve(parentValue, args){
-                return axios.get(`http://localhost:3000/projects/${parentValue.projectId}`)
+                return axios.get(`http://localhost:3000/projects/${parentValue.id}`)
                     .then(response => response.data);
-            } }    
+            }   }
     })
 }),
 RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
         employees: {
-            type: EmployeeType,
-           // args: { id: { type: GraphQLInt }},
+            type: new GraphQLList(EmployeeType),
+            args: { id: { type: GraphQLInt }},
             resolve(parentValue, args){
-                return employees.find()
+                return args.id
+                 ? employees.findById(args.id)
+                    .then(response => response.data)
+                 : employees.findAll()
             }
         },
         // company: {
@@ -94,8 +98,15 @@ RootQuery = new GraphQLObjectType({
             type: ProjectType,
             args: { id: { type: GraphQLInt }},
             resolve(parentValue, args){
-                return axios.get(`http://localhost:3000/projects/${args.id}`)
-                    .then(response => response.data)
+                // return args.id
+                // ? axios.get(`http://localhost:3000/projects/${args.id}`)
+                //     .then(response => response.data)
+                // : axios.get(`http://localhost:3000/projects/`)
+                //     .then(response => response.data)
+                //     .then(response => console.log(response))
+                return args.id  
+                ? ProjectsModel.find()
+                : ProjectsModel.findAll()
             }
         }
 
