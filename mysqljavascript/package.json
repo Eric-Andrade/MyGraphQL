@@ -1,15 +1,14 @@
 {
   "name": "apigraphql",
   "version": "1.0.0",
-  "description": "APIGraphQL con Nodejs, Express, GraphQL, Reactjs ",
+  "description": "Desarrollo de API GraphQL con JavaScript, ES6, MongoDB,...",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js --exec babel-node",
-    "json:server": "json-server --watch db.json"
+    "start": "nodemon index.js --exec babel-node"
   },
   "author": "Eric Torres Andrade <erictorresandrade.1@gmail.com>",
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
     "axios": "^0.16.2",
     "babel-cli": "^6.24.1",
@@ -17,13 +16,11 @@
     "babel-preset-stage-0": "^6.24.1",
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
-    "express-graphql": "^0.6.7",
-    "favicon": "^0.0.2",
     "graphql": "^0.10.5",
-    "json-server": "^0.12.0",
-    "lodash": "^4.17.4",
-    "mongoose": "^4.11.7",
-    "mysql2": "^1.4.0",
-    "sequelize": "^4.5.0"
+    "graphql-server-express": "^1.0.5",
+    "graphql-tools": "^1.1.0",
+    "mongoose": "^4.11.6",
+    "mysql2": "1.3.5",
+    "sequelize": "^4.4.2"
   }
 }

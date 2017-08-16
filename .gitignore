@@ -9,3 +9,6 @@ Python/Include/
 Python/Lib/
 Python/Scripts/
 Python/tcl/
+
+mysqljavascript/node_modules/
+Javascript/Sandbox/node_modules/

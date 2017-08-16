@@ -1,0 +1,12 @@
+cd eric/apigraphql/javascript
+
+Error: startsWith undefined
+Solución: error de sintaxis en index.js
+
+Scalares{
+    Int
+    Float
+    String
+    ID
+    Boolean
+}
