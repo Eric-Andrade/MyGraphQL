@@ -1,5 +1,6 @@
 import express from 'express'
 import expressGraphQL from 'express-graphql'
+import {sequelize } from './schema/models.connection'
 
 const app = express(),
       port = process.env.PORT || 4000;
@@ -9,5 +10,8 @@ app
     .use('/graphiql', expressGraphQL({
         schema,
         graphiql: true
-    }))
-    .listen(port, () => console.log(`GraphQL running on port ${port}...`))
+    }));
+    sequelize.sync().then(() =>{
+        app.listen(port, () => console.log(`APIGraphQL running on port ${port}...`))
+    })
+    

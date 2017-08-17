@@ -3,12 +3,12 @@ import _ from 'lodash'
 import mongoose from 'mongoose'
 
 //Conexiones
-  //MongoDB
+//MongoDB
     mongoose.Promise = global.Promise;
-    mongoose.connect('mongodb://eric:patol_03@ds149373.mlab.com:49373/itecor-durangodb')
+    mongoose.connect('mongodb://eric:patol_03@ds149373.mlab.com:49373/itecor-durangodb', { useMongoClient: true })
     mongoose.connection
-      .once('open', () => console.log('Connection has been established to MongoDB database successfully.'))
-      .on('error', error => console.log('Error connecting to MongoLab:', error));
+    .once('open',() => console.log('~Connection has been established to MongoDB database successfully.'))
+    .on('error', console.error.bind(console, '~Error connecting to MongoLab:'));
   //MySQL
     const sequelize = new Sequelize('itecor_durango', 'kityadmin', 'adminkity2017', {
         host: 'www.itecormovil.com',
@@ -20,7 +20,7 @@ import mongoose from 'mongoose'
     sequelize
       .authenticate()
       .then(() => {
-          console.log('Connection has been established to MySQL database successfully.');
+          console.log('~Connection has been established to MySQL database successfully.');
       })
       .catch(err => {
           console.error('Unable to connect to the database:', err);

@@ -1,6 +1,6 @@
 
 import axios from 'axios'
-import {sequelize, employees, ProjectsModel} from './models.connection'
+import { sequelize, mongoose, employees, ProjectsModel } from './models.connection'
 
 const graphql = require('graphql'), 
       _ = require('lodash');
@@ -21,12 +21,12 @@ const ProjectType = new GraphQLObjectType({
         id: {type: GraphQLInt },
         nameProject: {type: GraphQLString },
         description: {type: GraphQLString },
-        users: { type: new GraphQLList(EmployeeType),
-                resolve(parentValue, args){
-                return axios.get(`http://localhost:3000/projects/${parentValue.id}/users`)
-                .then(response => response.data);
-                }
-        }
+        // users: { type: new GraphQLList(EmployeeType),
+        //         resolve(parentValue, args){
+        //         return axios.get(`http://localhost:3000/projects/${parentValue.id}/users`)
+        //         .then(response => response.data);
+        //         }
+        // }
     })
 })
 
@@ -82,7 +82,12 @@ RootQuery = new GraphQLObjectType({
             resolve(parentValue, args){
                 return args.id
                  ? employees.findById(args.id)
-                    .then(response => response.data)
+                    .then(employee => {
+                        var array = [employee];
+                        var e = array[0].name;
+                        console.log('Empleado(a): '+e)
+                        return e;
+                    })
                  : employees.findAll()
             }
         },
@@ -95,18 +100,31 @@ RootQuery = new GraphQLObjectType({
             //     }
             // },
         project: {
-            type: ProjectType,
+            type: new GraphQLList(ProjectType),
             args: { id: { type: GraphQLInt }},
             resolve(parentValue, args){
                 // return args.id
-                // ? axios.get(`http://localhost:3000/projects/${args.id}`)
-                //     .then(response => response.data)
-                // : axios.get(`http://localhost:3000/projects/`)
-                //     .then(response => response.data)
-                //     .then(response => console.log(response))
+                    // ? axios.get(`http://localhost:3000/projects/${args.id}`)
+                    //     .then(response => response.data)
+                    // : axios.get(`http://localhost:3000/projects/`)
+                    //     .then(response => response.data)
+                    //     .then(response => console.log(response))
                 return args.id  
-                ? ProjectsModel.find()
-                : ProjectsModel.findAll()
+                ? ProjectsModel.findById(args.id, function(err,video){
+                    if(video != null){
+                    console.log("Encontré el video: "+video.id);
+                    }else{
+                        console.log("No encontré el video: ");
+
+                    }
+                })
+                : ProjectsModel.find({}, (err, projects) =>{
+                    if(projects != null){
+                        console.log('ProjectsModel-n: con datos')
+                    }else{
+                        console.log('ProjectsModel-n: sin datos')
+                    }
+                })
             }
         }
 
