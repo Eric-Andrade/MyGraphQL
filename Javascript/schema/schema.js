@@ -18,32 +18,39 @@ const {
 const ProjectType = new GraphQLObjectType({
     name: 'project',
     fields: () => ({
-        id: {type: GraphQLInt },
+        _id: {type: GraphQLString },
+        owner: {type: GraphQLInt },
         nameProject: {type: GraphQLString },
         description: {type: GraphQLString },
-        // users: { type: new GraphQLList(EmployeeType),
-        //         resolve(parentValue, args){
-        //         return axios.get(`http://localhost:3000/projects/${parentValue.id}/users`)
-        //         .then(response => response.data);
-        //         }
-        // }
+        employee: { type: new GraphQLList(EmployeeType),
+                    resolve(parentValue, args){
+                    return employees.findAll({where: {idproject: parentValue.owner}})
+                    }
+            }
     })
 })
 
-// const CompanyType = new GraphQLObjectType({
-    //     name: 'Company',
-    //     fields: () => ({
-    //         id: {type: GraphQLInt },
-    //         name: {type: GraphQLString },
-    //         description: {type: GraphQLString },
-    //         users: { type: new GraphQLList(UserType),
-    //                 resolve(parentValue, args){
-    //                 return axios.get(`http://localhost:3000/companies/${parentValue.id}/users`)
-    //                 .then(response => response.data);
-    //                 }
-    //         }
-    //     })
-    // })
+const OrdersType = new GraphQLObjectType({
+        name: 'Orders',
+        fields: () => ({
+            IDPEDIDO: {type: GraphQLInt }, 
+            IDCLIENTE: {type: GraphQLInt },
+            PPRECIOTOTAL: {type: GraphQLInt },
+            PSTATUS: {type: GraphQLString },
+            PDIRECCION_R: {type: GraphQLString },
+            PFECHA: {type: GraphQLString },
+            COORDENADAS_R: {type: GraphQLString },
+            PDIRECCION_E: {type: GraphQLString },
+            COORDENADAS_E: {type: GraphQLString },
+            PPAGADO: {type: GraphQLString },
+            PFORMA: {type: GraphQLString },
+            employee: { type: new GraphQLList(EmployeeType),
+                resolve(parentValue, args){
+                return employees.findAll({where: {id: parentValue.IDCLIENTE}})
+                }
+            }
+        })
+    })
 
 const EmployeeType = new GraphQLObjectType({
     name: 'employees',
@@ -60,17 +67,37 @@ const EmployeeType = new GraphQLObjectType({
         dateregistered: { type: GraphQLString },
         itecorposition: { type: GraphQLString },
         status: { type: GraphQLString },
+        birthdate: { type: GraphQLString },
+        avatar: { type: GraphQLString },
         idproject: { type: GraphQLInt },
+        idpedido: { type: GraphQLInt },
         // company:{ type: CompanyType,
             //     resolve(parentValue, args){
             //         return axios.get(`http://localhost:3000/companies/${parentValue.companyId}`)
             //             .then(response => response.data);
             //     } },
-        project:{ type: ProjectType,
-            resolve(parentValue, args){
-                return axios.get(`http://localhost:3000/projects/${parentValue.id}`)
-                    .then(response => response.data);
-            }   }
+        project:{ type: new GraphQLList(ProjectType),
+            resolve({idproject:idproject, name:name}){
+                return ProjectsModel.find({owner: idproject}, (err, project) =>{
+                    if(project != null){
+                        // console.log(`${name } - ${project}`)
+                    }else{
+                        console.log(`Project' employee don´t found.`)
+                    }
+                    if(idproject === null){
+                        console.log(`${name} has no projects yet.`)
+                    }
+                })
+                
+            }    
+        },
+        orders: {type: new GraphQLList(OrdersType),
+            resolve({idpedido: idpedido}){
+                return axios.get(`http://kityplanchoapi.mybluemix.net/api/v1/getpedido?id=${idpedido}`)
+                    .then(response => response.data)
+                    .then(data => data.PEDIDO)
+            }        
+        }
     })
 }),
 RootQuery = new GraphQLObjectType({
@@ -81,27 +108,22 @@ RootQuery = new GraphQLObjectType({
             args: { id: { type: GraphQLInt }},
             resolve(parentValue, args){
                 return args.id
-                 ? employees.findById(args.id)
-                    .then(employee => {
-                        var array = [employee];
-                        var e = array[0].name;
-                        console.log('Empleado(a): '+e)
-                        return e;
-                    })
+                 ? employees.findAll({where: {id: args.id}})
                  : employees.findAll()
             }
         },
-        // company: {
-            //     type: CompanyType,
-            //     args: { id: { type: GraphQLInt }},
-            //     resolve(parentValue, args){
-            //         return axios.get(`http://localhost:3000/companies/${args.id}`)
-            //             .then(response => response.data)
-            //     }
-            // },
-        project: {
+        orders: {
+                type: new GraphQLList(OrdersType),
+                args: { IDCLIENTE: { type: GraphQLInt }},
+                resolve(parentValue, args){
+                    return axios.get(`http://kityplanchoapi.mybluemix.net/api/v1/getpedidos`)
+                        .then(response => response.data)
+                        .then(response => console.log(response))
+                }
+            },
+        projects: {
             type: new GraphQLList(ProjectType),
-            args: { id: { type: GraphQLInt }},
+            args: { owner: { type: GraphQLInt }},
             resolve(parentValue, args){
                 // return args.id
                     // ? axios.get(`http://localhost:3000/projects/${args.id}`)
@@ -109,62 +131,86 @@ RootQuery = new GraphQLObjectType({
                     // : axios.get(`http://localhost:3000/projects/`)
                     //     .then(response => response.data)
                     //     .then(response => console.log(response))
-                return args.id  
-                ? ProjectsModel.findById(args.id, function(err,video){
-                    if(video != null){
-                    console.log("Encontré el video: "+video.id);
+                return args.owner
+                ? ProjectsModel.find({owner: args.owner}, (err, project) =>{
+                    if(project != null){
+                     //   console.log('ProjectsModel-1: con datos ')
                     }else{
-                        console.log("No encontré el video: ");
-
+                        console.log('ProjectsModel-1: sin datos')
                     }
                 })
                 : ProjectsModel.find({}, (err, projects) =>{
                     if(projects != null){
-                        console.log('ProjectsModel-n: con datos')
+                        // console.log('ProjectsModel-n: con datos')
                     }else{
                         console.log('ProjectsModel-n: sin datos')
                     }
                 })
             }
         }
-
     }
 });
 
 const mutation = new GraphQLObjectType({
     name: 'mutationUser',
     fields:{
-        addUser:{
-            type: EmployeeType,
+        addEmployee:{
+            type: new GraphQLList(EmployeeType),
             args:{
-                firstName: { type: new GraphQLNonNull(GraphQLString) },
+                username: { type: new GraphQLNonNull(GraphQLString) },
+                password: { type: new GraphQLNonNull(GraphQLString) },
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                lastname: { type: GraphQLString },
                 age: { type: new GraphQLNonNull(GraphQLInt) },
-                companyId: { type: GraphQLString }
+                gender: { type: new GraphQLNonNull(GraphQLString) },
+                email: { type: new GraphQLNonNull(GraphQLString) },
+                phone: { type: GraphQLString },
+                dateregistered: { type: GraphQLString },
+                itecorposition: { type: new GraphQLNonNull(GraphQLString) },
+                status: { type: new GraphQLNonNull(GraphQLString) },
+                birthdate: { type: GraphQLString },
+                avatar: { type: GraphQLString },
+                idproject: { type: GraphQLInt },
             },
-            resolve(parentValue, { firstName, age }){
-                return axios.post('http://localhost:3000/users', { firstName, age })
-                    .then(response => response.data)
+            resolve(parentValue, { username, password, name, lastname, age, gender, email, phone, 
+                    itecorposition, status, avatar, idproject }){
+                    return employees.create({ username, password, name, lastname, age, gender, email, phone,
+                        itecorposition, status, avatar, idproject })
+                            .then(employees => { return employees.findAll()})
+                // return axios.post('http://localhost:3000/users', { firstName, age })
+                //     .then(response => response.data)
             }
         },
-        deleteUser:{
+        deleteEmployee:{
             type: EmployeeType,
             args:{ id: {type: new GraphQLNonNull(GraphQLInt)}},
             resolve(parentValue, { id }){
-                return axios.delete(`http://localhost:3000/users/${id}`)
-                    .then(response => response.data)
+                return employees.destroy({where: {id: id}})
+                    .then(response => console.log('Employee deleted'))
             }
         },
-        patchUser:{
+        updateEmployee:{
             type: EmployeeType,
             args:{
                 id: {type: new GraphQLNonNull(GraphQLInt)},
-                firstName: {type: GraphQLString},
-                age: {type: GraphQLInt},
-                companyId: {type: GraphQLString}
+                username: { type: new GraphQLNonNull(GraphQLString) },
+                password: { type: new GraphQLNonNull(GraphQLString) },
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                lastname: { type: GraphQLString },
+                age: { type: new GraphQLNonNull(GraphQLInt) },
+                gender: { type: new GraphQLNonNull(GraphQLString) },
+                email: { type: new GraphQLNonNull(GraphQLString) },
+                phone: { type: GraphQLString },
+                dateregistered: { type: GraphQLString },
+                itecorposition: { type: new GraphQLNonNull(GraphQLString) },
+                status: { type: new GraphQLNonNull(GraphQLString) },
+                birthdate: { type: GraphQLString },
+                avatar: { type: GraphQLString },
+                idproject: { type: GraphQLInt },
             },
             resolve(parentValue, args){
-                return axios.patch(`http://localhost:3000/users/${args.id}`, args)
-                    .then(response => response.data)
+                    return employees.update(args, {where: {id: args.id}})
+                        .then(employees => { return employees.findAll()})
             }
 
         }

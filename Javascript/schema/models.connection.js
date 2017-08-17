@@ -28,7 +28,8 @@ import mongoose from 'mongoose'
 
 //Modelos 
     const ProjectsModel = mongoose.model('project', new mongoose.Schema({
-      id: {type: String },
+      _id: {type: String},
+      owner: {type: Number },
       nameProject: {type: String },
       description: {type: String }
     }))
@@ -36,6 +37,8 @@ import mongoose from 'mongoose'
     const EmployeesModel = sequelize.define('employees', {
       id: {type: Sequelize.INTEGER, 
         primaryKey: true},
+      idproject: {type: Sequelize.INTEGER}, 
+      idpedido: {type: Sequelize.INTEGER}, 
       username: {type: Sequelize.STRING,
         allowNull: false},
       password: {type: Sequelize.STRING},
@@ -49,7 +52,8 @@ import mongoose from 'mongoose'
       dateregistered: {type: Sequelize.STRING},
       itecorposition: {type: Sequelize.STRING},
       status: {type: Sequelize.STRING},
-      idproject: {type: Sequelize.INTEGER}
+      birthdate: {type: Sequelize.STRING},
+      avatar: {type: Sequelize.STRING}
     },{
         timestamps: false,
         paranoid: true,

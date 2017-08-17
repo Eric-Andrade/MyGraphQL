@@ -10,30 +10,97 @@ Scalares{
     ID
     Boolean
 }
-
-{
-  project{
+////////////////////////
+query{
+  projects(owner: 1){
     ...p
   }
-  employees {
+  
+  employees(id: 1){
     ...e
+  }
+  
+  }
+
+  fragment p on project {
+    _id
+    owner
+    nameProject
+    description
+    employee{
+      name
+      lastname
+      itecorposition
+    }
+  }
+
+  fragment e on employees {
+    id
+    username
+    password
+    name
+    lastname
+    age
+    gender
+    email
+    phone
+    dateregistered
+    itecorposition
+    status
+    birthdate
+    avatar
+    project{
+      owner
+      nameProject
+      description
+    }
+  }
+
+/addEmployee/
+mutation {
+  addEmployee(username: "Julio25", password: "1234", name: "Julio", lastname: "Almeida", age: 36, gender: "male", email: "julio@gmail.com", phone: "6181092321", itecorposition: "consultant", status: "active", avatar: "", idproject: 5) {
+    id
+    username
+    password
+    name
+    lastname
+    age
+    gender
+    email
+    phone
+    dateregistered
+    itecorposition
+    status
+    birthdate
+    avatar
+  }
+}
+/deleteEmployee/
+mutation {
+  deleteEmployee(id: 12) {
+    id
+  }
+}
+/updateEmployee/
+mutation {
+  updateEmployee(id: 13, username: "Julio13", password: "1234", name: "Julio", lastname: "Almeida", age: 36, gender: "male", email: "julio@gmail.com", phone: "6181092321", itecorposition: "consultant", status: "active", avatar: "", idproject: 1) {
+    id
+    username
+    password
+    name
+    lastname
+    age
+    gender
+    email
+    phone
+    dateregistered
+    itecorposition
+    status
+    birthdate
+    avatar
   }
 }
 
-fragment e on employees {
-  name
-  lastname
-  username
-  password
-  phone
-  itecorposition
-}
-
-fragment p on project{
-  id
-  nameProject
-  description
-}
 
 
 ----GIT----
